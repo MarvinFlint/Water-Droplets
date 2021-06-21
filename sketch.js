@@ -6,7 +6,8 @@ let current; // = new float[cols][rows];
 let previous; // = new float[cols][rows];
 let weight = 800;
 let started = false;
-let stoneCouner = 0;
+let stone;
+let stoneCounter = 0;
 
 let dampening = 0.7;
 
@@ -38,15 +39,18 @@ function draw() {
   
   if(stoneCounter == 0){
     weight = 800;
+    stone = "Small";
   }
   if(stoneCounter == 1){
     weight = 2500;
+    stone = "Medium";
   }
-  if(stoneCounter == 0){
+  if(stoneCounter == 2){
     weight = 5000;
+    stone = "Large";
   }
-  
-  dampening = map(force, 0, 100, 0.89, 0.99);
+
+  dampening = map(serialController.read(), 0, 1023, 0.89, 0.99);
   // bg
   background(0);
 
@@ -65,14 +69,9 @@ function draw() {
       pixels[index + 0] = current[i][j];
       pixels[index + 1] = current[i][j];
       pixels[index + 2] = current[i][j];
-
-      if(!mouseIsPressed && pixels[index + 0] == 0 && pixels[index + 1] == 0 && pixels[index + 2] == 0){
-        if(force > 0){
-          
-        }        
+           
       }
-    }
-  }
+    }  
   updatePixels();
 
   
@@ -92,8 +91,8 @@ function draw() {
   if (serialController.read() && serialController.hasData()) {
     textSize(18);
     textAlign(LEFT);
-    text("Your stone size: " + serialController.read(), 10, 20);
-    text("Your force: " + force, 10, 40);
+    text("Your stone size: " + stone, 10, 20);
+    text("Your force: " + map(serialController.read(), 0, 1023, 0, 100), 10, 40);
     receivedValues = split(serialController.read(), " ");
     // show values
     fill(255);
@@ -109,8 +108,5 @@ function initSerial() {
 function keyPressed(e){
   if(key == "c"){
     initSerial();
-  }    
-  else{
-    force = 0;
-  }
+  }      
 }
