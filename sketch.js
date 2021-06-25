@@ -2,14 +2,14 @@ let serialController;
 
 let cols;
 let rows;
-let current; // = new float[cols][rows];
-let previous; // = new float[cols][rows];
+let current;
+let previous; 
 let weight = 800;
-let started = false;
+let started = true;
 let stone;
-let stoneCounter = 0;
+let stoneCounter = 1;
 
-let dampening = 0.7;
+let dampening = 0.99;
 
 function setup() {
   frameRate(120);
@@ -29,16 +29,24 @@ function setup() {
   
 }
 
-
-function mouseClicked() {
-  previous[mouseX][mouseY] = weight;
+function mouseClicked() { 
+  //implement scaling of i with analog input
+  for(let i = 0; i < 5; i++){
+    previous[mouseX][mouseY] = weight;
+    previous[mouseX + i][mouseY] = weight;
+    previous[mouseX][mouseY + i] = weight;
+    previous[mouseX + i][mouseY + i] = weight;
+    previous[mouseX - i][mouseY] = weight;
+    previous[mouseX][mouseY - i] = weight;
+    previous[mouseX - i][mouseY - i] = weight;
+  }
+  
 }
-
 
 function draw() {
   
   if(stoneCounter == 0){
-    weight = 800;
+    weight = 2500;
     stone = "Small";
   }
   if(stoneCounter == 1){
@@ -50,7 +58,7 @@ function draw() {
     stone = "Large";
   }
 
-  dampening = map(serialController.read(), 0, 1023, 0.89, 0.99);
+  // dampening = map(serialController.read(), 0, 1023, 0.89, 0.99);
   // bg
   background(0);
 
@@ -81,10 +89,12 @@ function draw() {
 
 
     
-  if(!started){
-    textSize(40);
+  if(!started){  
     fill(255);
     textAlign(CENTER);
+    textSize(80);
+    text("Pebbles", width / 2, height / 2 - 100);
+    textSize(40);
     text("Press c to connect", width / 2, height / 2);
   } 
 
@@ -93,6 +103,8 @@ function draw() {
     textAlign(LEFT);
     text("Your stone size: " + stone, 10, 20);
     text("Your force: " + map(serialController.read(), 0, 1023, 0, 100), 10, 40);
+    text("Rotate to calibrate force", 10, 60);
+    text("Press button to switch pebbles", 10, 80);
     receivedValues = split(serialController.read(), " ");
     // show values
     fill(255);
