@@ -8,8 +8,8 @@ let weight = 800;
 let started = true;
 let stone;
 let stoneCounter = 1;
-
-let dampening = 0.99;
+let strength = 1;
+let dampening = 0.95;
 
 function setup() {
   frameRate(120);
@@ -26,27 +26,32 @@ function setup() {
   previous = new Array(cols).fill(0).map(n => new Array(rows).fill(0));
 
   serialController = new SerialController(57600);
-  
 }
 
 function mouseClicked() { 
-  //implement scaling of i with analog input
-  for(let i = 0; i < 5; i++){
-    previous[mouseX][mouseY] = weight;
-    previous[mouseX + i][mouseY] = weight;
-    previous[mouseX][mouseY + i] = weight;
-    previous[mouseX + i][mouseY + i] = weight;
-    previous[mouseX - i][mouseY] = weight;
-    previous[mouseX][mouseY - i] = weight;
-    previous[mouseX - i][mouseY - i] = weight;
+  // center point
+  previous[mouseX][mouseY] = weight;
+  // iterate over the neigbouring cells
+  for(let i = 1; i <= strength; i++){
+    for(let j = 1; j <= strength; j++){
+      // check for cells outside of the radius
+      if(i * i + j * j > strength * strength){
+        continue;
+      }      
+      // set neighbouring cells
+      previous[mouseX + i][mouseY + j] = weight;
+      previous[mouseX - i][mouseY + j] = weight;
+      previous[mouseX + i][mouseY - j] = weight;
+      previous[mouseX - i][mouseY - j] = weight;
+    }
   }
-  
+  strength = 1;
 }
 
 function draw() {
   
   if(stoneCounter == 0){
-    weight = 2500;
+    weight = 1000;
     stone = "Small";
   }
   if(stoneCounter == 1){
@@ -109,7 +114,10 @@ function draw() {
     // show values
     fill(255);
   }
-  
+
+  if(mouseIsPressed){
+    strength += 1/20;
+  }
 }
 
 function initSerial() {
@@ -121,4 +129,5 @@ function keyPressed(e){
   if(key == "c"){
     initSerial();
   }      
+  console.log(strength);
 }
