@@ -1,15 +1,23 @@
 let serialController;
+let receivedValues;
 
 let cols;
 let rows;
 let current;
 let previous; 
 let weight = 800;
-let started = true;
+let started = false;
 let stone;
 let stoneCounter = 1;
 let strength = 1;
 let dampening = 0.95;
+let pressed = false;
+let fontRegular, fontPebble, fontSans;
+
+function preload(){
+  fontRegular = loadFont("normal.ttf");
+  fontPebble = loadFont("Pebbles.ttf");  
+}
 
 function setup() {
   frameRate(120);
@@ -28,7 +36,7 @@ function setup() {
   serialController = new SerialController(57600);
 }
 
-function mouseClicked() { 
+function buttonReleased() { 
   // center point
   previous[mouseX][mouseY] = weight;
   // iterate over the neigbouring cells
@@ -50,20 +58,19 @@ function mouseClicked() {
 
 function draw() {
   
-  if(stoneCounter == 0){
-    weight = 1000;
-    stone = "Small";
+  if(serialController.read() && serialController.hasData()){
+    receivedValues = split(serialController.read(), " ");
+    console.log(serialController.read());
+    if(receivedValues[0] == 1023){
+      strength += 1/20;
+    }
+    if(strength > 1 && receivedValues[0] == 0){
+      buttonReleased();
+    }
+    dampening = map(receivedValues[1], 0, 1023, 0.89, 0.99);
   }
-  if(stoneCounter == 1){
-    weight = 2500;
-    stone = "Medium";
-  }
-  if(stoneCounter == 2){
-    weight = 5000;
-    stone = "Large";
-  }
-
-  // dampening = map(serialController.read(), 0, 1023, 0.89, 0.99);
+  
+  
   // bg
   background(0);
 
@@ -98,26 +105,25 @@ function draw() {
     fill(255);
     textAlign(CENTER);
     textSize(80);
+    textFont(fontPebble);
     text("Pebbles", width / 2, height / 2 - 100);
     textSize(40);
+    textFont(fontRegular);
     text("Press c to connect", width / 2, height / 2);
+    textSize(20);
+    text("Tap or hold the button to throw a pebble", width/4, height * 0.75);
+    text("Rotate to switch between pebble sizes", width* 0.75, height * 0.75);
   } 
 
   if (serialController.read() && serialController.hasData()) {
     textSize(18);
-    textAlign(LEFT);
-    text("Your stone size: " + stone, 10, 20);
-    text("Your force: " + map(serialController.read(), 0, 1023, 0, 100), 10, 40);
-    text("Rotate to calibrate force", 10, 60);
-    text("Press button to switch pebbles", 10, 80);
+    textAlign(LEFT);    
     receivedValues = split(serialController.read(), " ");
     // show values
     fill(255);
   }
 
-  if(mouseIsPressed){
-    strength += 1/20;
-  }
+  
 }
 
 function initSerial() {
