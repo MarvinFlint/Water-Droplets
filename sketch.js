@@ -10,7 +10,7 @@ let started = false;
 let stone;
 let stoneCounter = 1;
 let strength = 1;
-let dampening = 0.95;
+let dampening = 0.99;
 let pressed = false;
 let fontRegular, fontPebble, fontSans;
 
@@ -18,6 +18,8 @@ function preload(){
   fontRegular = loadFont("normal.ttf");
   fontPebble = loadFont("Pebbles.ttf");  
 }
+
+
 
 function setup() {
   frameRate(120);
@@ -36,7 +38,7 @@ function setup() {
   serialController = new SerialController(57600);
 }
 
-function buttonReleased() { 
+function mouseClicked() { 
   // center point
   previous[mouseX][mouseY] = weight;
   // iterate over the neigbouring cells
@@ -56,24 +58,51 @@ function buttonReleased() {
   strength = 1;
 }
 
-function draw() {
+function mouseClicked() { 
+  // center point
   
-  if(serialController.read() && serialController.hasData()){
-    receivedValues = split(serialController.read(), " ");
-    console.log(serialController.read());
-    if(receivedValues[0] == 1023){
-      strength += 1/20;
+  previous[mouseX][mouseY] = weight;
+  // iterate over the neigbouring cells
+  for(let i = 1; i <= strength; i++){
+    for(let j = 1; j <= strength; j++){
+      // check for cells outside of the radius
+      if(i * i + j * j > strength * strength){
+        continue;
+      }      
+      // set neighbouring cells
+      previous[mouseX + i][mouseY + j] = weight;
+      previous[mouseX - i][mouseY + j] = weight;
+      previous[mouseX + i][mouseY - j] = weight;
+      previous[mouseX - i][mouseY - j] = weight;
     }
-    if(strength > 1 && receivedValues[0] == 0){
-      buttonReleased();
-    }
-    dampening = map(receivedValues[1], 0, 1023, 0.89, 0.99);
   }
+  strength = 1;
+}
+
+function mouseDragged() { 
+  // center point
   
-  
+  previous[mouseX][mouseY] = weight;
+  // iterate over the neigbouring cells
+  for(let i = 1; i <= strength; i++){
+    for(let j = 1; j <= strength; j++){
+      // check for cells outside of the radius
+      if(i * i + j * j > strength * strength){
+        continue;
+      }      
+      // set neighbouring cells
+      previous[mouseX + i][mouseY + j] = weight;
+      previous[mouseX - i][mouseY + j] = weight;
+      previous[mouseX + i][mouseY - j] = weight;
+      previous[mouseX - i][mouseY - j] = weight;
+    }
+  }
+  strength = 2;
+}
+
+function draw() {
   // bg
   background(0);
-
   
   loadPixels();
   for (let i = 1; i < cols - 1; i++) {
@@ -91,7 +120,7 @@ function draw() {
       pixels[index + 2] = current[i][j];
            
       }
-    }  
+  }  
   updatePixels();
 
   
@@ -109,31 +138,27 @@ function draw() {
     text("Pebbles", width / 2, height / 2 - 100);
     textSize(40);
     textFont(fontRegular);
-    text("Press c to connect", width / 2, height / 2);
+    text("Press any key to play", width / 2, height / 2);
     textSize(20);
-    text("Tap or hold the button to throw a pebble", width/4, height * 0.75);
-    text("Rotate to switch between pebble sizes", width* 0.75, height * 0.75);
+    if(windowWidth > 700){
+      text("Tap or hold the surface to throw a pebble", width/4, height * 0.75);
+      text("Rotate to switch between pebble sizes", width* 0.75, height * 0.75);
+    }
+    if(windowWidth < 700){
+      text("Tap or hold the surface to throw a pebble", width / 2, height * 0.75);
+      text("Rotate to switch between pebble sizes", width / 2, height * 0.9);
+    }    
   } 
-
-  if (serialController.read() && serialController.hasData()) {
-    textSize(18);
-    textAlign(LEFT);    
-    receivedValues = split(serialController.read(), " ");
-    // show values
-    fill(255);
+  if(mouseIsPressed){
+    strength += 0.16;
   }
-
-  
 }
 
-function initSerial() {
-  serialController.init();
+
+function keyPressed(e){
   started = true;
 }
 
-function keyPressed(e){
-  if(key == "c"){
-    initSerial();
-  }      
-  console.log(strength);
+function windowResized(){
+  resizeCanvas(windowWidth, windowHeight);
 }
