@@ -159,4 +159,8 @@ function doubleClicked(){
 
 function windowResized(){
   resizeCanvas(windowWidth, windowHeight);
+  cols = width;
+  rows = height;
+  current = new Array(cols).fill(0).map(n => new Array(rows).fill(0));
+  previous = new Array(cols).fill(0).map(n => new Array(rows).fill(0));
 }
