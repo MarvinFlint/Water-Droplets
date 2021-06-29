@@ -18,17 +18,7 @@ function preload(){
   fontPebble = loadFont("Pebbles.ttf");  
 }
 
-//get DPI
-let dpi = window.devicePixelRatio;
-let canvas = document.getElementsByClassName('p5Canvas');
 
-function fix_dpi() {
-//get CSS height
-//the + prefix casts it to an integer
-//the slice method gets rid of "px"let style_height = +getComputedStyle(canvas).getPropertyValue("height").slice(0, -2);//get CSS width
-let style_width = +getComputedStyle(canvas).getPropertyValue("width").slice(0, -2);//scale the canvascanvas.setAttribute('height', style_height * dpi);
-canvas.setAttribute('width', style_width * dpi);
-}
 
 function setup() {
   frameRate(120);
@@ -45,7 +35,7 @@ function setup() {
   previous = new Array(cols).fill(0).map(n => new Array(rows).fill(0));
   ratio = Math.ceil(window.devicePixelRatio);
   
-  serialController = new SerialController(57600);
+  
 }
 
 function mouseClicked() { 
@@ -109,6 +99,8 @@ function mouseDragged() {
 }
 
 function draw() {
+  width = width * ratio;
+  height = height * ratio;
   // bg
   background(0);
   
