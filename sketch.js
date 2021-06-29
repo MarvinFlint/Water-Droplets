@@ -1,5 +1,4 @@
-let serialController;
-let receivedValues;
+let ratio;
 
 let cols;
 let rows;
@@ -44,7 +43,8 @@ function setup() {
   // current = new float[cols][rows];
   current = new Array(cols).fill(0).map(n => new Array(rows).fill(0));
   previous = new Array(cols).fill(0).map(n => new Array(rows).fill(0));
-
+  ratio = Math.ceil(window.devicePixelRatio);
+  
   serialController = new SerialController(57600);
 }
 
@@ -131,7 +131,7 @@ function draw() {
   }  
   updatePixels();
 
-  
+ 
   let temp = previous;
   previous = current;
   current = temp;
@@ -148,6 +148,7 @@ function draw() {
     textFont(fontRegular);
     text("Double tap to play", width / 2, height / 2);
     textSize(20);
+    text(ratio + " ", 50, 50);
     if(windowWidth > 700){
       text("Tap or hold the surface to throw a pebble", width/4, height * 0.75);
       text("Rotate to switch between pebble sizes", width* 0.75, height * 0.75);
