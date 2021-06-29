@@ -25,7 +25,8 @@ function setup() {
   // pixel density
   pixelDensity(1);
   // canvas
-  canvas = createCanvas(windowWidth, windowHeight).parent('#canvas');
+  ratio = Math.ceil(window.devicePixelRatio);
+  canvas = createCanvas(windowWidth * ratio, windowHeight * ratio).parent('#canvas');
   cols = width;
   rows = height;
   // The following line initializes a 2D cols-by-rows array with zeroes
@@ -33,7 +34,7 @@ function setup() {
   // current = new float[cols][rows];
   current = new Array(cols).fill(0).map(n => new Array(rows).fill(0));
   previous = new Array(cols).fill(0).map(n => new Array(rows).fill(0));
-  ratio = Math.ceil(window.devicePixelRatio);
+  
   
   
 }
@@ -99,8 +100,6 @@ function mouseDragged() {
 }
 
 function draw() {
-  width = width * ratio;
-  height = height * ratio;
   // bg
   background(0);
   
