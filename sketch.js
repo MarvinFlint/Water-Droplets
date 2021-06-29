@@ -60,7 +60,6 @@ function mouseClicked() {
 
 function mouseClicked() { 
   // center point
-  
   previous[mouseX][mouseY] = weight;
   // iterate over the neigbouring cells
   for(let i = 1; i <= strength; i++){
@@ -80,8 +79,7 @@ function mouseClicked() {
 }
 
 function mouseDragged() { 
-  // center point
-  
+  // center point  
   previous[mouseX][mouseY] = weight;
   // iterate over the neigbouring cells
   for(let i = 1; i <= strength; i++){
@@ -138,7 +136,7 @@ function draw() {
     text("Pebbles", width / 2, height / 2 - 100);
     textSize(40);
     textFont(fontRegular);
-    text("Press any key to play", width / 2, height / 2);
+    text("Double tap to play", width / 2, height / 2);
     textSize(20);
     if(windowWidth > 700){
       text("Tap or hold the surface to throw a pebble", width/4, height * 0.75);
@@ -155,7 +153,7 @@ function draw() {
 }
 
 
-function keyPressed(e){
+function doubleClicked(){
   started = true;
 }
 
