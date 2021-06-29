@@ -25,7 +25,6 @@ function setup() {
   // pixel density
   pixelDensity(1);
   // canvas
-  ratio = Math.ceil(window.devicePixelRatio);
   canvas = createCanvas(windowWidth * ratio, windowHeight * ratio).parent('#canvas');
   cols = width;
   rows = height;
